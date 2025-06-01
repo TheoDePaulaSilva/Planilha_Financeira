@@ -3,7 +3,8 @@ use Planilha_Financeira;
 
 create table usuario(
 	id int primary key,
-    nome varchar(255),
-    senha_hash varchar(60),
-    data_criacao datetime
+    email varchar(255),
+    nome varchar(255) not null,
+    senha_hash varchar(60) not null,
+    data_criacao datetime not null
 );
