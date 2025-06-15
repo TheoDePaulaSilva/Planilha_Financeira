@@ -8,3 +8,5 @@ create table usuario(
     senha_hash varchar(60) not null,
     data_criacao date not null
 );
+
+select * from usuario;

@@ -16,9 +16,9 @@ def cadastro():
         nome = input('Nome inválido!! Insira novamente: ').strip()
     while True:
         email = input('Insira seu email: ').strip()
-        cursor.execute('SELECT email FROM usuario WHERE email = %s', (email,))
+        cursor.execute('SELECT email FROM usuario WHERE email = %s', (email))
         if cursor.fetchone() is None:
-            break  # email ainda não existe → pode usar
+            break
         else:
             print('O email já existe! Tente outro.')
     senha = input('Insira uma senha: ')
@@ -28,10 +28,11 @@ def cadastro():
     data_criacao = datetime.date.today()
     cod_id = 'select id from usuario order by id desc limit 1'
     cursor.execute(cod_id)
-    if cursor.fetchone() == None:
+    result = cursor.fetchone()
+    if result is None:
         id = 1
     else:
-        id = int(cursor.fetchone())+1
+        id = int(result[0])+1
     cod_add = 'insert into usuario values (%s,%s,%s,%s,%s)'
     val = (id,nome,email,senha_hash,data_criacao)
     cursor.execute(cod_add,val)
@@ -39,3 +40,8 @@ def cadastro():
     conexaobd.close()
 
 cadastro()
+
+janela = Tk()
+janela.title('Planilha Financeira')
+
+janela.mainloop()
