@@ -42,6 +42,9 @@ def cadastro():
     conexaobd.close()
 
 def login():
+    tela_log = Toplevel(inicio)
+    tela_log.title('Login')
+    tela_log.iconphoto(False, icone)
     conexaobd = pymysql.connect(
     host='127.0.0.1',
     user='root',
@@ -65,7 +68,8 @@ def login():
         else:
             print("Senha incorreta.")
     conexaobd.close()
-
+    
+    inicio.withdraw()
 
 inicio = Tk()
 inicio.title('Planilha Financeira')
