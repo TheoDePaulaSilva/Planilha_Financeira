@@ -5,6 +5,10 @@ from tkinter import *
 from PIL import Image, ImageTk
 
 def cadastro():
+    inicio.withdraw()
+    tela_cad = Toplevel(inicio)
+    tela_cad.title('Conectar')
+    tela_cad.iconphoto(False, icone)
     conexaobd = pymysql.connect(
     host='127.0.0.1',
     user='root',
@@ -42,9 +46,12 @@ def cadastro():
     conexaobd.close()
 
 def login():
+    inicio.withdraw()
     tela_log = Toplevel(inicio)
-    tela_log.title('Login')
+    tela_log.title('Entrar')
     tela_log.iconphoto(False, icone)
+    tela_log.configure(bg = 'gray15')
+
     conexaobd = pymysql.connect(
     host='127.0.0.1',
     user='root',
@@ -52,6 +59,11 @@ def login():
     database='Planilha_Financeira'
     )
     cursor = conexaobd.cursor()
+
+
+    
+    cx_email = Entry(tela_log)
+    cx_email.grid(row = 15, column = 0)
     email = input('Insira seu emai: ').strip()
     cursor.execute('SELECT email FROM usuario WHERE email = %s', (email))
     if cursor.fetchone() is None:
@@ -68,18 +80,30 @@ def login():
         else:
             print("Senha incorreta.")
     conexaobd.close()
-    
-    inicio.withdraw()
 
 inicio = Tk()
 inicio.title('Planilha Financeira')
+inicio.configure(bg = 'gray15')
+
 imagem_pil = Image.open("icone.png")
 imagem = imagem_pil.resize((250, 250))
 icone = ImageTk.PhotoImage(imagem)
 inicio.iconphoto(False, icone)
-titulo = Label(inicio, text = 'Planilha Financeira', font = ('Arial', 40, 'bold'), padx=80,pady=80)
-titulo.grid(row = 1, column=1)
-label = Label(inicio, image=icone,padx=80,pady=80)
-label.grid(row=0, column = 1)
+
+espaco = Label(inicio, height=2, bg='gray15')
+espaco.grid(row = 0, column=0)
+
+img = Label(inicio, image = icone, padx = 80, pady = 80)
+img.grid(row=1, column = 0)
+
+titulo = Label(inicio, text = 'Planilha Financeira', font = ('Arial', 40, 'bold'), padx=80,pady=80, bg = 'gray15', fg = 'white')
+titulo.grid(row = 2, column=0)
+
+but_Cad = Button(inicio, text = 'Cadastrar', command = cadastro, font = ('Arial', 20, 'bold'), bg = 'gold1')
+but_Cad.grid(row = 3, column = 0, padx = 10, pady = 10)
+
+but_Log = Button(inicio, text = 'Entrar', command = login, font = ('Arial', 20, 'bold'), bg = 'gray80', fg = '#212121')
+but_Log.grid(row = 4, column = 0, padx = 20, pady = 20)
+
 
 inicio.mainloop()
