@@ -44,6 +44,10 @@ def login():
     tela_log.title('Entrar')
     tela_log.iconphoto(False, icone)
     tela_log.configure(bg = 'gray15')
+    tela_log.columnconfigure(0, weight=1)
+    espaco = Label(tela_log, height=1, bg='gray15')
+    espaco.grid(row = 0, column=0)
+    tela_log.geometry("500x700")
 
     conexaobd = pymysql.connect(
     host='127.0.0.1',
@@ -53,9 +57,23 @@ def login():
     )
     cursor = conexaobd.cursor()
 
-    cx_email = Entry(tela_log)
-    cx_email.grid(row = 15, column = 0)
-    email = input('Insira seu emai: ').strip()
+    imagem_pil = Image.open("icone.png")
+    icone_log = ImageTk.PhotoImage(imagem_pil.resize((150, 150)))
+    imagem_log = Label(tela_log, image = icone_log)
+    imagem_log.grid(row = 1, column = 0, padx = 10, pady = 30)
+
+    titulo_log = Label(tela_log, text = 'Entrar', bg = 'gray15', fg = 'white', font = ('Arial', 30, 'bold'), padx = 10, pady = 10).grid(row = 2, column = 0)
+
+    txt = Label(tela_log, text = 'Email:', bg = 'gray15', fg = 'white', padx = 10, pady = 10, font = ('Arial', 20, 'bold')).grid(row = 3, column = 0)
+    cx_email = Entry(tela_log, font = ('Arial', 15))
+    cx_email.grid(row = 4, column = 0, pady = 10, padx = 10)
+
+    txt = Label(tela_log, text = 'Senha:', bg = 'gray15', fg = 'white', padx = 10, pady = 10, font = ('Arial', 20, 'bold')).grid(row = 5, column = 0)
+    cx_email = Entry(tela_log, font = ('Arial', 15), show = '*')
+    cx_email.grid(row = 6, column = 0, pady = 10, padx = 10)
+
+    botao_log = Button(tela_log, text = 'Entrar', bg = 'gray80', fg = '#212121', font = ('Arial', 20, 'bold')).grid(row = 7, column = 0, padx = 10, pady = 10)
+
     cursor.execute('SELECT email FROM usuario WHERE email = %s', (email))
     if cursor.fetchone() is None:
         print('O cadastro não existe!!')
