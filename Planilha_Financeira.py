@@ -32,15 +32,8 @@ def cadastro():
         senha = input('Insira sua senha: ')
     senha_hash = bcrypt.hashpw(senha.encode('utf-8'),bcrypt.gensalt())
     data_criacao = datetime.date.today()
-    cod_id = 'select id from usuario order by id desc limit 1'
-    cursor.execute(cod_id)
-    result = cursor.fetchone()
-    if result is None:
-        id = 1
-    else:
-        id = int(result[0])+1
-    cod_add = 'insert into usuario values (%s,%s,%s,%s,%s)'
-    val = (id,nome,email,senha_hash,data_criacao)
+    cod_add = 'insert into usuario (nome, email, senha_hash, data_criacao) values (%s,%s,%s,%s)'
+    val = (nome,email,senha_hash,data_criacao)
     cursor.execute(cod_add,val)
     conexaobd.commit()
     conexaobd.close()
@@ -60,8 +53,6 @@ def login():
     )
     cursor = conexaobd.cursor()
 
-
-    
     cx_email = Entry(tela_log)
     cx_email.grid(row = 15, column = 0)
     email = input('Insira seu emai: ').strip()
@@ -84,6 +75,10 @@ def login():
 inicio = Tk()
 inicio.title('Planilha Financeira')
 inicio.configure(bg = 'gray15')
+
+inicio.columnconfigure(0, weight=1)
+for i in range(6):
+    inicio.rowconfigure(i, weight=1)
 
 imagem_pil = Image.open("icone.png")
 imagem = imagem_pil.resize((250, 250))
