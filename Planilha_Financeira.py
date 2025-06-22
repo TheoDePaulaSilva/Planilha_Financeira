@@ -21,7 +21,7 @@ def cadastro():
         nome = input('Nome inválido!! Insira novamente: ').strip()
     while True:
         email = input('Insira seu email: ').strip()
-        cursor.execute('SELECT email FROM usuario WHERE email = %s', (email))
+        cursor.execute('SELECT email FROM usuario WHERE email = %s', (email,))
         if cursor.fetchone() is None:
             break
         else:
@@ -47,48 +47,71 @@ def login():
     tela_log.columnconfigure(0, weight=1)
     espaco = Label(tela_log, height=1, bg='gray15')
     espaco.grid(row = 0, column=0)
-    tela_log.geometry("500x700")
+    tela_log.geometry("500x650")
 
-    conexaobd = pymysql.connect(
-    host='127.0.0.1',
-    user='root',
-    password='Noceutempao-123',
-    database='Planilha_Financeira'
-    )
-    cursor = conexaobd.cursor()
+    def verificarLogin():
+        email = cx_email.get().strip().lower()
+        senha = cx_senha.get()
+
+        if not email and not senha:
+            txt_email.configure(fg = 'red2')
+            txt_senha.configure(fg = 'red2')
+        elif not email:
+            txt_email.configure(fg = 'red2')
+            txt_senha.configure(fg = 'white')
+        elif not senha:
+            txt_senha.configure(fg = 'red2')
+            txt_email.configure(fg = 'white')
+        else:
+            txt_email.configure(fg = 'white')
+            txt_senha.configure(fg = 'white')
+
+            conexaobd = pymysql.connect(
+            host='127.0.0.1',
+            user='root',
+            password='Noceutempao-123',
+            database='Planilha_Financeira'
+            )
+            cursor = conexaobd.cursor()
+            cursor.execute('SELECT email FROM usuario WHERE email = %s', (email,))
+            if cursor.fetchone() is None:
+                print('O cadastro não existe!!')
+                res = int(input('Deseja fazer cadastro? 1 para sim e 0 para não: '))
+                if res:
+                    cadastro()
+            else:
+                cursor.execute('SELECT senha_hash FROM usuario WHERE email = %s',(email,))
+                senha_hash = cursor.fetchone()[0].encode('utf-8')
+                if bcrypt.checkpw(senha.encode('utf-8'), senha_hash):
+                    print("Senha correta!")
+                    cursor.execute('SELECT nome FROM usuario WHERE email = %s',(email,))
+                    atual_user = cursor.fetchone()[0]
+                    print(f'O usuario atual é: {atual_user}')
+                else:
+                    print("Senha incorreta!!")
+            conexaobd.close()
 
     imagem_pil = Image.open("icone.png")
     icone_log = ImageTk.PhotoImage(imagem_pil.resize((150, 150)))
     imagem_log = Label(tela_log, image = icone_log)
+    imagem_log.image = icone_log
     imagem_log.grid(row = 1, column = 0, padx = 10, pady = 30)
 
-    titulo_log = Label(tela_log, text = 'Entrar', bg = 'gray15', fg = 'white', font = ('Arial', 30, 'bold'), padx = 10, pady = 10).grid(row = 2, column = 0)
+    titulo_log = Label(tela_log, text = 'Entrar', bg = 'gray15', fg = 'white', font = ('Arial', 30, 'bold'), padx = 10, pady = 10)
+    titulo_log.grid(row = 2, column = 0)
 
-    txt = Label(tela_log, text = 'Email:', bg = 'gray15', fg = 'white', padx = 10, pady = 10, font = ('Arial', 20, 'bold')).grid(row = 3, column = 0)
+    txt_email = Label(tela_log, text = '*Email:', bg = 'gray15', fg = 'white', padx = 10, pady = 10, font = ('Arial', 20, 'bold'))
+    txt_email.grid(row = 3, column = 0)
     cx_email = Entry(tela_log, font = ('Arial', 15))
     cx_email.grid(row = 4, column = 0, pady = 10, padx = 10)
 
-    txt = Label(tela_log, text = 'Senha:', bg = 'gray15', fg = 'white', padx = 10, pady = 10, font = ('Arial', 20, 'bold')).grid(row = 5, column = 0)
-    cx_email = Entry(tela_log, font = ('Arial', 15), show = '*')
-    cx_email.grid(row = 6, column = 0, pady = 10, padx = 10)
+    txt_senha = Label(tela_log, text = '*Senha:', bg = 'gray15', fg = 'white', padx = 10, pady = 10, font = ('Arial', 20, 'bold'))
+    txt_senha.grid(row = 5, column = 0)
+    cx_senha = Entry(tela_log, font = ('Arial', 15), show = '*')
+    cx_senha.grid(row = 6, column = 0, pady = 10, padx = 10)
 
-    botao_log = Button(tela_log, text = 'Entrar', bg = 'gray80', fg = '#212121', font = ('Arial', 20, 'bold')).grid(row = 7, column = 0, padx = 10, pady = 10)
-
-    cursor.execute('SELECT email FROM usuario WHERE email = %s', (email))
-    if cursor.fetchone() is None:
-        print('O cadastro não existe!!')
-        res = int(input('Deseja fazer cadastro? 1 para sim e 0 para não: '))
-        if res:
-            cadastro()
-    else:
-        senha = input('Insira sua senha: ')
-        cursor.execute('SELECT senha_hash FROM usuario WHERE email = %s',(email))
-        senha_hash = cursor.fetchone()[0].encode('utf-8')
-        if bcrypt.checkpw(senha.encode('utf-8'), senha_hash):
-            print("Senha correta!")
-        else:
-            print("Senha incorreta.")
-    conexaobd.close()
+    botao_log = Button(tela_log, text = 'Entrar', bg = 'gray80', fg = "#212121", font = ('Arial', 20, 'bold'), command = verificarLogin)
+    botao_log.grid(row = 8, column = 0, padx = 10, pady = 10)
 
 inicio = Tk()
 inicio.title('Planilha Financeira')
