@@ -9,6 +9,11 @@ def cadastro():
     tela_cad = Toplevel(inicio)
     tela_cad.title('Conectar')
     tela_cad.iconphoto(False, icone)
+    tela_cad.configure(bg = 'gray15')
+    tela_cad.columnconfigure(0, weight=1)
+    espaco = Label(tela_cad, height=1, bg='gray15')
+    espaco.grid(row = 0, column=0)
+    tela_cad.geometry("500x700")
     conexaobd = pymysql.connect(
     host='127.0.0.1',
     user='root',
@@ -20,7 +25,7 @@ def cadastro():
     while  not all(c.isalpha() or c.isspace() for c in nome):
         nome = input('Nome inválido!! Insira novamente: ').strip()
     while True:
-        email = input('Insira seu email: ').strip()
+        email = input('Insira seu email: ').strip().lower()
         cursor.execute('SELECT email FROM usuario WHERE email = %s', (email,))
         if cursor.fetchone() is None:
             break
